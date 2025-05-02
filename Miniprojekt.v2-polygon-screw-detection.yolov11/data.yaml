@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['Black screw', 'Long screw', 'Medium screw', 'Short screw']
+
+roboflow:
+  workspace: vt2-project
+  project: miniprojekt
+  version: 2
+  license: Private
+  url: https://app.roboflow.com/vt2-project/miniprojekt/2

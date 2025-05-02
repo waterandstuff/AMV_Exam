@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['Black screw', 'Long screw', 'Medium screw', 'Short screw']
+
+roboflow:
+  workspace: amv-ycxdl
+  project: screw-detection-hnff5
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/amv-ycxdl/screw-detection-hnff5/dataset/1
