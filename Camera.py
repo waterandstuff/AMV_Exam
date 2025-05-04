@@ -3,7 +3,7 @@ import datetime
 
 def main():
     # Select the camera (0 is default, use 1 or other if you have multiple)
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     if not cap.isOpened():
         print("❌ Cannot open camera")
@@ -14,27 +14,30 @@ def main():
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     # Set up the video writer
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_filename = f"recording_{timestamp}.mp4"
+
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can use 'XVID' or 'MJPG' too
+    output_filename = f"output_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
     out = cv2.VideoWriter(output_filename, fourcc, 20.0, (frame_width, frame_height))
 
     print("📹 Recording started. Press 'q' to stop.")
-
+    picturecount = 1
     while True:
         ret, frame = cap.read()
         if not ret:
             print("❌ Failed to grab frame")
             break
 
-        # Optional: draw timestamp on frame
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cv2.putText(frame, now, (10, frame_height - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        key = cv2.waitKey(1) & 0xFF
+       
+        if key == ord('p'):
+            picture_filename = f"picture_{picturecount}.jpg"
+            cv2.imwrite(picture_filename, frame)
+            print(f"📸 Picture saved as: {picture_filename}")
+            picturecount += 1
 
-        cv2.imshow("Live USB Camera Feed", frame)  # Show the live video
+        cv2.imshow("Live USB Camera Feed", frame)  # Show the live video           
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if key == ord('q'):
             print("🛑 Stopping...")
             break
 
