@@ -1,7 +1,59 @@
 from ultralytics import YOLO
+import cv2
+import datetime
 
 
-model = YOLO(r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Model_Bounding\Box_run13\weights\best.pt")
-#model = YOLO(r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Model_poly\Poly_run12\weights\best.pt")
 
-model.predict(source=r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Screw Detection.v1-bounding-box-screw-detection.yolov11\test\images", show=True, save=True, conf=0.7, iou=0.5, save_txt=True, save_conf=True, project=r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Screw Detection.v1-bounding-box-screw-detection.yolov11\test", name="Box_run12") 
+#model = YOLO(r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Model_Bounding\Box_run13\weights\best.pt")
+model = YOLO(r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Model_poly\Poly_run12\weights\best.pt")
+
+
+
+def main():
+    # Select the camera (0 is default, use 1 or other if you have multiple)
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("❌ Cannot open camera")
+        return
+
+    # Get frame dimensions
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    # Set up the video writer
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can use 'XVID' or 'MJPG' too
+    output_filename = f"output_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+    out = cv2.VideoWriter(output_filename, fourcc, 20.0, (frame_width, frame_height))
+
+    print("📹 Recording started. Press 'q' to stop.")
+    picturecount = 1
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("❌ Failed to grab frame")
+            break
+
+        key = cv2.waitKey(1) & 0xFF
+       
+        if key == ord('p'):
+            picture_filename = f"picture_{picturecount}.jpg"
+            cv2.imwrite(picture_filename, frame)
+            print(f"📸 Picture saved as: {picture_filename}")
+            picturecount += 1
+            #model.predict(source=picture_filename, show=True, save=True, conf=0.7, iou=0.5, save_txt=True, save_conf=True, project=r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Screw Detection.v1-bounding-box-screw-detection.yolov11\test", name="Box_run12") 
+
+        cv2.imshow("Live USB Camera Feed", frame)  # Show the live video           
+        model.predict(source=0, show=True, save=True, conf=0.7, iou=0.5, save_txt=True, save_conf=True, project=r"C:\Users\bayka\Documents\AAU Robot\AppliedMachineVision\AMV_Exam\Screw Detection.v1-bounding-box-screw-detection.yolov11\test", name="Box_run12")
+        if key == ord('q'):
+            print("🛑 Stopping...")
+            break
+
+    # Release everything
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
